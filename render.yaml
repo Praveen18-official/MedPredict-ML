@@ -1,0 +1,20 @@
+services:
+  # Web Service
+  - type: web
+    name: medpredict-ml-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    
+    # Environment variables (if needed)
+    envVars:
+      - key: PORT
+        value: 5000
+        
+    # Build configuration
+    build:
+      # Python version
+      pythonVersion: 3.9.6
