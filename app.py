@@ -3,18 +3,39 @@ from flask_cors import CORS
 import pickle
 import pandas as pd
 import os
+import sys
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Load model artifacts
+# Load model artifacts with error handling
+model = None
+scaler = None
+columns = []
+
 try:
-    model = pickle.load(open("medpredict_model.pkl", "rb"))
-    scaler = pickle.load(open("scaler.pkl", "rb"))
-    columns = pickle.load(open("model_columns.pkl", "rb"))
-    print("Model, scaler, and columns loaded successfully!")
-except FileNotFoundError as e:
-    print(f"Error loading model files: {e}")
+    # Try loading model files
+    model_path = os.path.join(os.path.dirname(__file__), "medpredict_model.pkl")
+    scaler_path = os.path.join(os.path.dirname(__file__), "scaler.pkl")
+    columns_path = os.path.join(os.path.dirname(__file__), "model_columns.pkl")
+    
+    print(f"Loading model from: {model_path}")
+    model = pickle.load(open(model_path, "rb"))
+    
+    print(f"Loading scaler from: {scaler_path}")
+    scaler = pickle.load(open(scaler_path, "rb"))
+    
+    print(f"Loading columns from: {columns_path}")
+    columns = pickle.load(open(columns_path, "rb"))
+    
+    print("✅ Model, scaler, and columns loaded successfully!")
+    print(f"✅ Model type: {type(model)}")
+    print(f"✅ Columns: {columns}")
+    
+except Exception as e:
+    print(f"❌ Error loading model files: {e}")
+    print(f"❌ Current directory: {os.getcwd()}")
+    print(f"❌ Files in directory: {os.listdir('.')}")
     model = None
     scaler = None
     columns = []
